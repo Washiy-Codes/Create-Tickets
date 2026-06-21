@@ -5,12 +5,14 @@ import {
   CardTitle,
   CardContent,
 } from "@/components/ui/card";
-import { ticketPath } from "@/paths";
+import { ticketEditPath, ticketPath } from "@/paths";
 import Link from "next/link";
 import { TICKETS_ICONS } from "../constants";
-import { Ticket } from "../types";
 import { Button } from "@/components/ui/button";
-import { LucideSquareArrowOutUpRight } from "lucide-react";
+import { LucideEdit, LucideSquareArrowOutUpRight, LucideTrash2} from "lucide-react";
+import { Ticket } from "@/app/generated/prisma/client";
+import { deleteTicket} from "../actions/delete-ticket";
+
 
 interface TicketItemProps {
     ticket: Ticket;
@@ -21,16 +23,32 @@ interface TicketItemProps {
 const TicketItem = ({ ticket, isDetail }: TicketItemProps) => {
     const detailButton = (
         <Button asChild variant="outline" size="icon">
-            <Link href={ticketPath(ticket.id)} className="text-sm">
+            <Link prefetch href={ticketPath(ticket.id)} className="text-sm">
                 <LucideSquareArrowOutUpRight />
             </Link>
         </Button>
     );
 
+    const deleteButton = 
+    <form action={deleteTicket.bind(null, ticket.id)}>
+     <Button variant="destructive" size="icon" className="h-7 w-7">
+    <LucideTrash2 />
+    </Button>      
+    </form>
+
+    const editButton = (
+        <Button variant="outline" size="icon">
+            <Link prefetch href={ticketEditPath(ticket.id)} className="text-sm">
+                <LucideEdit />
+            </Link>
+        </Button>
+    );
+
+
     return (
         <div className={clsx("w-full gap-x-1 flex",{
            "max-w-105": !isDetail,
-           "max-w-[500px]": isDetail
+           "max-w-125": isDetail
         })}>
         <Card key={ticket.id} className="mb-4 max-w-105 w-full">
             <CardHeader>
@@ -46,7 +64,18 @@ const TicketItem = ({ ticket, isDetail }: TicketItemProps) => {
                 </CardContent>  
             </Card>
             <div className="flex flex-col gap-y-2">
-            {isDetail ? null : detailButton}
+            {isDetail ? (
+                <>
+                {editButton}
+                {deleteButton}
+                </>
+            
+        ) : (
+                <>
+                {detailButton}
+                {editButton}
+                </>
+                )}
             </div>
         </div>
     )
