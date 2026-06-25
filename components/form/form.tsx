@@ -6,9 +6,11 @@ type FormProps = {
     action: (payload: FormData)=> void
     children: React.ReactNode;
     actionState:ActionState;
+    onSuccess?: (actionState: ActionState) => void;
+    onError?: (actionState: ActionState) => void;
 }
 
-const Form = ({action, children, actionState}: FormProps)=>{
+const Form = ({action, children, actionState, onSuccess, onError}: FormProps)=>{
      useActionFeedback(actionState, {
         onSuccess: ({actionState}) => {
             if(actionState.message) {

@@ -24,7 +24,7 @@ export const toActionState = (status:ActionState['status'],message: string, payl
     }
 }
 
-const fromErrorToActionState = (error: unknown, payload: FormData): ActionState => {
+const fromErrorToActionState = (error: unknown, payload?: FormData): ActionState => {
     if(error instanceof z.ZodError) {
         return {
             message: error.issues[0]?.message ?? "Validation error",
