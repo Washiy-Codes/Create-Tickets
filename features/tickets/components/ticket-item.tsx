@@ -10,10 +10,11 @@ import { ticketEditPath, ticketPath } from "@/paths";
 import Link from "next/link";
 import { TICKETS_ICONS } from "../constants";
 import { Button } from "@/components/ui/button";
-import { LucideEdit, LucideSquareArrowOutUpRight, LucideTrash2} from "lucide-react";
+import { LucideEdit, LucideMoreVertical, LucideSquareArrowOutUpRight} from "lucide-react";
 import { Ticket } from "@/app/generated/prisma/client";
 import { deleteTicket} from "../actions/delete-ticket";
-
+import { currencyFromCents } from "@/components/utils/currency";
+import { TicketMoreMenu } from "./ticket-more-menu";
 
 interface TicketItemProps {
     ticket: Ticket;
@@ -30,13 +31,6 @@ const TicketItem = ({ ticket, isDetail }: TicketItemProps) => {
         </Button>
     );
 
-    const deleteButton = 
-    <form action={deleteTicket.bind(null, ticket.id)}>
-     <Button variant="destructive" size="icon" className="h-7 w-7">
-    <LucideTrash2 />
-    </Button>      
-    </form>
-
     const editButton = (
         <Button asChild variant="outline" size="icon">
             <Link prefetch href={ticketEditPath(ticket.id)} className="text-sm">
@@ -45,13 +39,19 @@ const TicketItem = ({ ticket, isDetail }: TicketItemProps) => {
         </Button>
     );
 
+    const moreMebuButton = <TicketMoreMenu ticket={ticket} trigger={
+        <Button variant="outline" size="icon">
+            <LucideMoreVertical className="h-4 w-4" />
+        </Button>
+    } />
+
 
     return (
         <div className={clsx("w-full gap-x-1 flex",{
-           "max-w-105": !isDetail,
-           "max-w-125": isDetail
+           "max-w-sm": !isDetail,
+           "max-w-md": isDetail
         })}>
-        <Card key={ticket.id} className="mb-4 max-w-105 w-full">
+        <Card key={ticket.id} className="mb-4 max-w-sm w-full">
             <CardHeader>
                 <CardTitle className="flex items-center gap-x-2">
                 <span>{TICKETS_ICONS[ticket.status]}</span>
@@ -65,14 +65,16 @@ const TicketItem = ({ ticket, isDetail }: TicketItemProps) => {
                 </CardContent>  
                 <CardFooter className="flex justify-between">
                  <p className="text-sm text-muted-foreground">{ticket.deadline}</p>
-                 <p className="text-lg font-bold">${(ticket.bounty / 100).toFixed(2)}</p>
+                 <p className="text-md font-bold text-primary">
+                    {currencyFromCents(ticket.bounty)}
+                 </p>
                 </CardFooter>
             </Card>
             <div className="flex flex-col gap-y-2">
             {isDetail ? (
                 <>
                 {editButton}
-                {deleteButton}
+                {moreMebuButton}
                 </>
             
         ) : (

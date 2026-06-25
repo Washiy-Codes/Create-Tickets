@@ -2,6 +2,7 @@
 
 import { setCookieByKey } from "@/components/actions/cookies";
 import { ActionState, fromErrorToActionState, toActionState } from "@/components/form/utils/to-action-state";
+import { toCents } from "@/components/utils/currency";
 import prisma from "@/lib/prisma";
 import { ticketPath, ticketsPath } from "@/paths";
 import { revalidatePath } from "next/cache";
@@ -12,8 +13,8 @@ import { z } from "zod";
 const upsertTicketSchema = z.object({
     title: z.string().min(1).max(100),
     content: z.string().min(1).max(1024),
-    deadline: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/, "isRequired"),
-    bounty: z.coerce.number().positive("isRequired")
+    deadline: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Is Required"),
+    bounty: z.coerce.number().positive()
 });
 
 const upsertTicket = async (
@@ -30,7 +31,7 @@ const upsertTicket = async (
 
     const dbData = {
         ...data,
-        bounty: data.bounty * 100
+        bounty: toCents(data.bounty)
     }
 
     await prisma.ticket.upsert({
