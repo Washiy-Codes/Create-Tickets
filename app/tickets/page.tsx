@@ -2,12 +2,14 @@
 import { CardCompact } from '@/components/card-compact';
 import {Heading} from '@/components/heading';
 import Spinner from '@/components/spinner';
+import { getBaseUrl } from '@/components/utils/url';
 import { TicketList } from '@/features/tickets/components/ticket-list';
 import { UpsertTicketForm } from '@/features/tickets/components/upsert-ticket-form';
 import { Suspense } from 'react';
 
 
 const TicketsPage = () => {
+  console.log(getBaseUrl())
   return (
     <div className="flex flex-col gap-8">
       <Heading title="Tickets Page" description="Your tickets page to view all tickets" />
