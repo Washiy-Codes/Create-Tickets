@@ -16,11 +16,11 @@ const EditPage = async ({params} : EditPageProps) => {
         notFound();
     }
     return (
-        <div className="flex flex-col gap-8 items-center justify-center">
+        <div className="flex flex-1 flex-col gap-8 items-center justify-center min-h-screen">
          <CardCompact 
             title="Edit Ticket"
             description="Edit your ticket here."
-            className="max-w-125 w-full"
+            className="max-w-125 w-full animate-fade-in-from-top"
             content={<UpsertTicketForm ticket={ticket} />}
             />
         </div>
