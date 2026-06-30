@@ -14,23 +14,23 @@ export const EMPTY_ACTION_STATE: ActionState = {
     timestamp: Date.now(),
 }
 
-export const toActionState = (status:ActionState['status'],message: string, payload?: FormData): ActionState => {
+export const toActionState = (status:ActionState['status'],message: string, formData?: FormData): ActionState => {
     return {
         message,
         status,
         fieldErrors: {},
-        payload,
+        payload: formData,
         timestamp: Date.now(),
     }
 }
 
-const fromErrorToActionState = (error: unknown, payload?: FormData): ActionState => {
+const fromErrorToActionState = (error: unknown, formData?: FormData): ActionState => {
     if(error instanceof z.ZodError) {
         return {
             message: error.issues[0]?.message ?? "Validation error",
             status: "ERROR",
             fieldErrors: error.flatten().fieldErrors,
-            payload: payload,
+            payload: formData,
             timestamp: Date.now(),
         }
     }else if(error instanceof Error) {
@@ -38,7 +38,7 @@ const fromErrorToActionState = (error: unknown, payload?: FormData): ActionState
             message: error.message,
             status: "ERROR",
             fieldErrors: {},
-            payload: payload,
+            payload: formData,
             timestamp: Date.now(),
         }
     }else {
@@ -46,7 +46,7 @@ const fromErrorToActionState = (error: unknown, payload?: FormData): ActionState
         message: "An unexpected error occurred",
         status: "ERROR",
         fieldErrors: {},
-        payload: payload,
+        payload: formData,
         timestamp: Date.now(),
     }
     }
