@@ -5,7 +5,9 @@ import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import { ticketsPath } from "@/paths";
+import { homePath} from "@/paths";
+import { signIn } from "@/auth";
+import { Prisma } from "@prisma/client";
 
 const signUpSchema = z.object({
   username: z.string().min(3).max(20).trim().refine((value)=> !value.includes(" "),"Username cannot contain spaces"),
@@ -34,12 +36,25 @@ const signUp = async (_actionState:ActionState,formData: FormData) => {
       email,
       passwordHash: await bcrypt.hash(password, 10),
     },
-  });    
+  }); 
+  const result = await signIn("credentials", {
+    email,
+    password,
+    redirect: false,
+  }); 
+  if (result?.error) {
+    return toActionState("ERROR", "Sign up failed", formData);
+  } 
 }catch(error){
+  if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      // P2002 is the Prisma error code for Unique constraint failed
+      if (error.code === 'P2002') {
+        return toActionState("ERROR", 'An account with this email already exists.', formData);}
+    }
    return fromErrorToActionState(error, formData);
 }
 toActionState("SUCCESS", "Account created successfully.");
-redirect(ticketsPath());
+return redirect(homePath());
 };
 
 export {signUp}

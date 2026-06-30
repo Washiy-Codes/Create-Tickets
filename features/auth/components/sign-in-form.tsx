@@ -1,15 +1,32 @@
-import { SubmitButton } from "@/components/form/submit-button"
-import { Input } from "@/components/ui/input"
+"use client";
+import { Form } from "@/components/form/form";
+import { SubmitButton } from "@/components/form/submit-button";
+import { EMPTY_ACTION_STATE } from "@/components/form/utils/to-action-state";
+import { Input } from "@/components/ui/input";
+import { useActionState} from "react";
+import { signInAction } from "../actions/sign-in";
+import { FieldErrors } from "@/components/form/field-errors";
+import { LogInWithSocials } from "@/app/socials/socials-login";
 
-
-const SignInForm = () => {
+const SignInForm =  () => {
+  const [actionState, action] = useActionState(signInAction, EMPTY_ACTION_STATE);
+ 
   return (
-    <form action={"signIn"} className="flex flex-col gap-4">
-      <Input type="email" placeholder="Email" />
-      <Input type="password" placeholder="Password" />
-      <SubmitButton label="Sign In" />
-    </form>
-  )
-}
+    <div className="flex flex-col gap-4">
+      <Form action={action} actionState={actionState} >
+        <Input name="email" type="email" placeholder="Email" defaultValue={actionState.payload?.get("email") as string}  />
+        <FieldErrors name="email" actionState={actionState} />
+        
+        <Input name="password" type="password" placeholder="Password" defaultValue={actionState.payload?.get("password") as string}  />
+        <FieldErrors name="password" actionState={actionState} />
+        
+        <SubmitButton label="Sign In" />
+      </Form>
+      <LogInWithSocials />
+    </div>
+  );
+};
 
-export {SignInForm}
+export { SignInForm };
+
+
