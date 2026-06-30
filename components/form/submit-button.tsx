@@ -3,11 +3,11 @@ import { useFormStatus } from "react-dom"
 import { Button } from "../ui/button"
 import { LoaderCircle } from "lucide-react"
 import { clsx } from "clsx"
-import { useEffect, useRef } from "react"
+import {cloneElement} from "react"
 
 type SubmitButtonProps = { 
     label?: string,
-    icon?: React.ReactElement
+    icon?: React.ReactElement<{className?: string}>,
     // variant?: "default" | "outline" | "ghost" | "link" | "destructive" | "secondary" | "success" | "warning" | "error"
     // size?: "default" | "sm" | "lg"
 } 
@@ -27,7 +27,7 @@ const SubmitButton = ({ label, icon}: SubmitButtonProps) => {
       "ml-2": !!label,
     })}
   >
-    {icon}
+    {cloneElement(icon, {className: "h-4 w-4"})}
   </span>
 )}
       </Button>

@@ -14,19 +14,28 @@ import { Button } from "@/components/ui/button";
 import { LucideEdit, LucideMoreVertical, LucideSquareArrowOutUpRight} from "lucide-react";
 import { currencyFromCents } from "@/components/utils/currency";
 import { TicketMoreMenu } from "./ticket-more-menu";
-// import { User, Ticket } from "@/app/generated/prisma/client";
+import { getAuthOrRedirect } from "@/features/auth/actions/get-auth-or-redirect";
+import { isOwner } from "@/features/auth/utils/is-owner";
 
 type  TicketItemProps ={
     ticket: Prisma.TicketGetPayload<{
         include: {
-            user: true;
+            user: {
+                select: {
+                    username: true;
+                }
+            };
         }
     }>;
     isDetail?: boolean
 }
 
 
-const TicketItem = ({ ticket, isDetail }: TicketItemProps) => {
+const TicketItem = async({ ticket, isDetail }: TicketItemProps) => {
+    const user = await getAuthOrRedirect();
+
+    const isTicketOwner = await isOwner(user, ticket);
+    
     const detailButton = (
         <Button asChild variant="outline" size="icon">
             <Link prefetch href={ticketPath(ticket.id)} className="text-sm">
@@ -35,19 +44,19 @@ const TicketItem = ({ ticket, isDetail }: TicketItemProps) => {
         </Button>
     );
 
-    const editButton = (
+    const editButton = isTicketOwner ? (
         <Button asChild variant="outline" size="icon">
             <Link prefetch href={ticketEditPath(ticket.id)} className="text-sm">
                 <LucideEdit />
             </Link>
         </Button>
-    );
+    ) : null;
 
-    const moreMebuButton = <TicketMoreMenu ticket={ticket} trigger={
+    const moreMebuButton = isTicketOwner ? (<TicketMoreMenu ticket={ticket} trigger={
         <Button variant="outline" size="icon">
             <LucideMoreVertical className="h-4 w-4" />
         </Button>
-    } />
+    } />) : null;
 
 
     return (
