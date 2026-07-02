@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Header } from "@/components/header";
+import { Header } from "@/app/_navigation/header";
 import { ThemeProviderWrapper } from "@/components/theme/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
-import { SessionProvider } from "next-auth/react"
+import {Sidebar } from "@/app/_navigation/sidebar/components/sidebar"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,17 +33,18 @@ export default async function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <SessionProvider refetchOnWindowFocus={true} refetchInterval={0}>
         <ThemeProviderWrapper>
           <Header />
+          <div className="flex overflow-hidden border-collapse h-screen">
+          <Sidebar />
           <main className="
           py-18 px-5 overflow-y-auto overflow-x-hidden min-h-screen flex-1 flex-col flex bg-secondary/20"
           >
           {children}
           </main>
+          </div>
           <Toaster expand/> 
         </ThemeProviderWrapper>
-        </SessionProvider>
       </body>
     </html>
   );
