@@ -1,28 +1,45 @@
-// export type searchParams = {
-//         search:string | string[] | undefined,
-//         sort:string | string[] | undefined
-    
-// }
 
-// import {createSearchParamsCache, parseAsString} from "nuqs/server"
+import { createSearchParamsCache, parseAsString, parseAsInteger } from "nuqs/server";
 
-// export const searchParamsCache = createSearchParamsCache({
-//   search: parseAsString.withDefault(""),
-//   sort: parseAsString.withDefault("newest")
-// });
+export const searchParser = parseAsString.withDefault("").withOptions({
+    shallow: false,
+    clearOnDefault: true
+  });
 
-// export type ParsedSearchParams = ReturnType<typeof searchParamsCache.parse>
+export const sortParser = {
+  sortKey: parseAsString.withDefault("createdAt"),
+  sortValue: parseAsString.withDefault("desc")
+}
 
+export const paginationParser = {
+  page: parseAsInteger.withDefault(0),
+  size: parseAsInteger.withDefault(5)
+}
 
-import { createSearchParamsCache, parseAsString } from "nuqs/server";
+export const sortOptions = {
+  shallow: false,
+   clearOnDefault: true
+}
+
+export const paginationOptions = {
+  shallow: false,
+   clearOnDefault: true
+}
 
 export const searchParamsCache = createSearchParamsCache({
-  search: parseAsString.withDefault(""),
-  sort: parseAsString.withDefault("newest")
+  search: searchParser,
+  // sort: sortParser
+  ...sortParser,
+  ...paginationParser
 });
 
-// Explicitly type out the object shape to override any automated Next.js 15 Promise contamination
-export type ParsedSearchParams = {
-  search: string;
-  sort: string;
-};
+export type ParsedSearchParams = Awaited<ReturnType<typeof searchParamsCache.parse>>;
+
+
+
+export type ParsedSortParams = ReturnType<typeof searchParamsCache.parse>;
+
+
+
+
+
