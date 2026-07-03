@@ -5,6 +5,7 @@ import { Header } from "@/app/_navigation/header";
 import { ThemeProviderWrapper } from "@/components/theme/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import {Sidebar } from "@/app/_navigation/sidebar/components/sidebar"
+import { NuqsAdapter } from "nuqs/adapters/next/app"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,7 +41,9 @@ export default async function RootLayout({
           <main className="
           py-18 px-5 overflow-y-auto overflow-x-hidden min-h-screen flex-1 flex-col flex bg-secondary/20"
           >
+           <NuqsAdapter>
           {children}
+        </NuqsAdapter>
           </main>
           </div>
           <Toaster expand/> 
