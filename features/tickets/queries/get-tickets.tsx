@@ -1,62 +1,80 @@
-// import prisma from "@/lib/prisma";
-// import { searchParams } from "../search-params";
+
+// import  prisma  from "@/lib/prisma";
 // import { ParsedSearchParams } from "../search-params";
 
-// const getTickets = async (searchParams: ParsedSearchParams, userId?: string) => {
-//   return await prisma.ticket.findMany({
-//     where:{
-//       userId: userId,
-//         title:{
+// type GetTicketsProps = {
+//   userId?: string;
+//   searchParams: ParsedSearchParams;
+// };
+
+//   const getTickets = async ({ userId, searchParams }: GetTicketsProps) => {
+//   const skip = searchParams.page * searchParams.size;
+//   const take = searchParams.size;
+
+//   const tickets = await prisma.ticket.findMany({
+//     where: {
+//       userId,
+
+//       ...(searchParams.search && {
+//         title: {
 //           contains: searchParams.search,
-//           mode: "insensitive"
-//         }
+//           mode: "insensitive",
+//         },
+//       }),
 //     },
+
+//     skip,
+//     take,
+
 //     orderBy: {
-//       ...(searchParams.sort === "newest" && { createdAt: "desc" }),
-//       ...(searchParams.sort ==="bounty" && { bounty: "desc" })
+//       [searchParams.sortKey]: searchParams.sortValue,
 //     },
-//     include:{
+
+//     include: {
 //       user: {
 //         select: {
 //           username: true,
-//         }
-//       }
-//     }
+//         },
+//       },
+//     },
 //   });
+//   const totalCount = await prisma.ticket.count({
+//     where
+//     },
+//   })
+//   return { tickets, totalCount };
 // };
 
-// export {getTickets};
+// export { getTickets };
 
 
 
-
-
-import prisma from "@/lib/prisma";
+import  prisma  from "@/lib/prisma";
 import { ParsedSearchParams } from "../search-params";
 
-const getTickets = async (searchParams: ParsedSearchParams, userId?: string) => {
-  // 1. Build the orderBy array dynamically to satisfy Prisma's strict type system
-  const orderBy: Record<string, "asc" | "desc">[] = [];
-
-  if (searchParams.sort === "bounty") {
-    orderBy.push({ bounty: "desc" });
-  } else {
-    // Default to newest if sort is "newest" or unspecified
-    orderBy.push({ createdAt: "desc" });
-  }
-
-  return await prisma.ticket.findMany({
-    where: {
-      userId: userId,
-      // 2. Prevent crashes by ensuring contains only runs if a search string actually exists
-      title: searchParams.search
-        ? {
-            contains: searchParams.search,
-            mode: "insensitive",
-          }
-        : undefined,
+export const getTickets = async (
+  userId: string | undefined,
+  searchParams: ParsedSearchParams
+) => {
+  const where = {
+    userId,
+    title: {
+      contains: searchParams.search,
+      mode: "insensitive" as const,
     },
-    orderBy: orderBy, // Pass the dynamically formed array
+  };
+
+  const skip = searchParams.page * searchParams.size;
+  const take = searchParams.size;
+
+ const [tickets, count] = await prisma.$transaction([
+   prisma.ticket.findMany({
+    where,
+    skip,
+    take,
+    orderBy: {
+      [searchParams.sortKey]: searchParams.sortValue,
+    },
     include: {
       user: {
         select: {
@@ -64,11 +82,36 @@ const getTickets = async (searchParams: ParsedSearchParams, userId?: string) => 
         },
       },
     },
-  });
+  }),
+  prisma.ticket.count({
+    where,
+  }),
+ ], {
+  maxWait: 10000, // Time to wait for a connection slot (10s)
+  timeout: 15000, // Maximum execution lifetime duration (15s)
+ }
+  )
+  return {
+    list: tickets,
+    metadata: {
+      count,
+      hasNextPage: count > skip + take,
+    },
+  };
 };
 
-export { getTickets };
 
 
 
 
+
+
+
+
+
+
+
+// const count = await prisma.ticket.count({
+//     where,
+
+//   });
