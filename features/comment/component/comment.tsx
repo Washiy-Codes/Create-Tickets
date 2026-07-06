@@ -1,15 +1,14 @@
 "use server"
 import { CommentItem } from './comment-item'
-import { getComment } from '../query/get-comment'
 import { CardCompact } from '@/components/card-compact';
 import { CommentCreateForm } from './comment-create-form';
 import { CommentDeleteButton } from './comment-delete-button';
 import { isOwner } from '@/features/auth/utils/is-owner';
 import { auth } from '@/auth';
+import { getComment } from '../query/get-comment';
 
 type CommentProp = {
     ticketId: string;
-    
 };
 
 const Comments = async({ ticketId }: CommentProp) => {
@@ -17,27 +16,28 @@ const Comments = async({ ticketId }: CommentProp) => {
     const session = await auth();
     const user = session?.user;
 
+
     return (
         <>
             <CardCompact 
                  title="Comments"
                  description="What is in your mind?....."
                  content={<CommentCreateForm ticketId={ticketId} />}
-                 className="w-full max-w-md"
+                 className="mb-4 w-full max-w-110 "
             />
             
             <div className="flex flex-col gap-y-2 w-full ml-4 mt-5">
-              {comments.map(async (comment) => {
-                  const canDelete = await isOwner(user, comment);
-
-                  return (
+              {comments.map(async (comment) => (
                       <CommentItem 
                           comment={comment} 
                           key={comment.id} 
-                          buttons={canDelete ? [<CommentDeleteButton key={comment.id} id={comment.id} />] : []}
+                          buttons={[
+                              ...(await isOwner(user, comment)
+                             ? [<CommentDeleteButton key="0" id={comment.id} />]
+                             : []),
+                          ]}
                       />
-                  );
-              })}
+              ))}
             </div>
             <div className="ml-8 flex justify-center mt-4">
                 {/* <MoreButton ticketId={ticketId} /> */}
