@@ -17,7 +17,8 @@ import { TicketMoreMenu } from "./ticket-more-menu";
 import { getAuthOrRedirect } from "@/features/auth/actions/get-auth-or-redirect";
 import { isOwner } from "@/features/auth/utils/is-owner";
 import { Comments } from "@/features/comment/component/comment";
-import { Suspense } from "react";
+import { CommentWithMetadata } from "@/features/comment/types";
+
 
 type  TicketItemProps ={
     ticket: Prisma.TicketGetPayload<{
@@ -102,7 +103,9 @@ const TicketItem = async({ ticket, isDetail }: TicketItemProps) => {
             </div>
             </div>
             <div className="w-full max-w-md">
-            {isDetail && <Comments ticketId={ticket.id} />}
+            {isDetail ?
+            <Comments ticketId={ticket.id} /> 
+             : null}
             </div>
         
         </div>
