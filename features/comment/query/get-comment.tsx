@@ -8,6 +8,7 @@ type getCommentProps = {
 }
 
 const getComment = async ({ ticketId}: getCommentProps) => {
+    await new Promise((resolve) => setTimeout(resolve, 2000));
    return await prisma.comment.findMany({
         where: {
             ticketId
