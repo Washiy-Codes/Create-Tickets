@@ -1,5 +1,4 @@
 import Breadcrumbs from '@/components/breadcramps';
-import { Heading } from '@/components/heading';
 import { Separator } from '@/components/ui/separator';
 import { TicketItem } from '@/features/tickets/components/ticket-item';
 import getTicket from '@/features/tickets/queries/get-ticket';
@@ -10,9 +9,10 @@ type TicketPageProps = {
     ticketId: string;}>;
 };
 const TicketPage= async({params}: TicketPageProps) => {
-      const {ticketId} = await params;  
+  const {ticketId} = await params;
 
     const ticket = await getTicket({ticketId});
+
     if(!ticket) {
         return (
              notFound()
