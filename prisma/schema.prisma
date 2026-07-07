@@ -18,9 +18,19 @@ model User {
   image         String?   // NextAuth maps the provider's profile image here
   emailVerified DateTime? // NextAuth expects this to handle email-based state tracking
   sessions      Session[]
+  passwordResetTokens  PasswordResetToken[]
   accounts      Account[] // Crucial: Connects users to their OAuth profiles
   tickets       Ticket[]   
   comments      Comment[] 
+}
+
+model PasswordResetToken {
+  tokenHash String @id
+  expiresAt DateTime
+  userId    String
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 // Added this model to resolve NextAuth OAuth token management
