@@ -17,7 +17,11 @@ const emailVerificationAction = async (
   _actionState: ActionState,
   formData: FormData
 ) => {
-  const user  = await getAuthOrRedirect({checkEmailVerified: false, checkOrganizations: false});
+  const user  = await getAuthOrRedirect({
+    checkEmailVerified: false,
+     checkOrganizations: false,
+     checkActiveOrganization: false,
+    });
 
   try {
     const { code } = emailVerificationSchema.parse(
