@@ -59,15 +59,27 @@ const seed = async () => {
         data: users.map((user) => ({ ...user, passwordHash })),
     });
 
-    await prisma.membership.create({
-        data: {
+    await prisma.membership.createMany({
+        data: [{
             userId: dbUser[0].id,
             organizationId: dbOrganization.id,
+            isActive: true,
+            membershipRole: "ADMIN",
         },
+       {
+        userId: dbUser[1].id,
+        organizationId: dbOrganization.id,
+        isActive: false,
+        membershipRole: "MEMBER",
+    }],
     })
 
     const dbTicket = await prisma.ticket.createManyAndReturn({
-        data: tickets.map((ticket) => ({ ...ticket, userId: dbUser[0].id })), // Associate all tickets with the first user
+        data: tickets.map((ticket) => ({
+             ...ticket,
+              userId: dbUser[0].id,
+              organizationId: dbOrganization.id,
+             })), // Associate all tickets with the first user
     });
 
     await prisma.comment.createMany({
