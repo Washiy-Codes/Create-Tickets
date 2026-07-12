@@ -10,7 +10,7 @@ import { Suspense } from 'react'
 const OrganizationPage = () => {
   return (
     <div className='flex flex-1 flex-col gap-y-4'>
-        <Heading title="Organization" description="Manage your organization settings and members."
+        <Heading title="Organizations" description="Manage your organization settings and members."
           action={
             <Button>
               <Link href={organizationCreatePath()} className='flex items-center gap-x-2'>
