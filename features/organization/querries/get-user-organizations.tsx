@@ -1,15 +1,17 @@
+
 import prisma from "@/lib/prisma";
-import { auth } from "@/auth"
+import { auth } from "@/auth";
 
 const getOrganizationsForUser = async () => {
-    const session = await auth()
-    const user = session?.user
-    if(!user) {
+    const session = await auth();
+    const user = session?.user;
+    if (!user) {
         return [];
     }
+    
     const organizations = await prisma.organization.findMany({
         where: {
-            memberships:{
+            memberships: {
                 some: {
                     userId: user.id
                 }   
@@ -22,18 +24,19 @@ const getOrganizationsForUser = async () => {
                 }
             },
             _count: {
-            select: {
-                memberships: true
+                select: {
+                    memberships: true
+                }
             }
-        }
         },
-    })
-    return organizations.map((memberships, ...organizations) => ({
-        ...organizations,
-        membershipByUser: memberships.memberships[0]
-    }))
-} 
+    });
+    return organizations.map((org) => ({
+        ...org,
+        membershipByUser: org.memberships[0] || null
+    }));
+};
 
-export { getOrganizationsForUser }
+export { getOrganizationsForUser };
+
 
 
