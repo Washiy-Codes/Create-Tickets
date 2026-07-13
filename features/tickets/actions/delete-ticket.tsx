@@ -7,11 +7,12 @@ import prisma from "@/lib/prisma";
 import { ticketsPath } from "@/paths";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { getTicketPermissions } from "../components/permission/get-ticket-permission";
 
 
 const deleteTicket = async(id: string) => {
     await new Promise((resolve) => setTimeout(resolve, 2000));
-    const user = await getAuthOrRedirect();
+    const {user} = await getAuthOrRedirect();
     try{
         const ticket = await prisma.ticket.findUnique({
             where: {
@@ -19,6 +20,13 @@ const deleteTicket = async(id: string) => {
             }
         });
         if(!ticket || !(await isOwner(user, ticket))){
+            return toActionState("ERROR", "Not authorized to delete this ticket");
+        }
+        const permission = await getTicketPermissions({
+            organizationId: ticket.organizationId,
+            userId: user?.id,
+        });
+        if (!permission.canDeleteTicket) {
             return toActionState("ERROR", "Not authorized to delete this ticket");
         }
      await prisma.ticket.delete({

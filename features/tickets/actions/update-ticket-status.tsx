@@ -11,7 +11,7 @@ import { isOwner } from "@/features/auth/utils/is-owner";
 const updateTicketStatus = async (ticketId: string, status: TicketStatus) => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    const user = await getAuthOrRedirect();
+    const {user} = await getAuthOrRedirect();
     
     try{
         const ticket = await prisma.ticket.findUnique({
