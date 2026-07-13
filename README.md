@@ -1,36 +1,129 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Multi-Tenant Ticket Management System
 
-## Getting Started
+A production-grade, full-stack ticketing application built with the **Next.js App Router**, **Prisma ORM**, and **TypeScript**. This platform features a robust multi-tenant architecture allowing users to create organizations, manage team memberships, and handle dynamic role-based access controls.
 
-First, run the development server:
+## 🚀 Key Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Multi-Tenant Architecture**: Dynamic organization creation and switching with isolated team workspaces.
+- **Role-Based Access Control (RBAC)**: Granular permission schemes (e.g., `canDeleteTicket`, `isAdmin`) managed securely via Next.js Server Actions.
+- **Advanced Data Pipelines**: Optimized data fetching featuring parallel processing (`Promise.all`) and transactional integrity (`prisma.$transaction`).
+- **Strict Type Safety**: End-to-end type safety utilizing explicit Prisma payload intersection mappings (`Prisma.TicketGetPayload`).
+- **Server-Driven UI**: Secure routing guards, contextual breadcrumbs, and instantaneous UI updates using Next.js caching algorithms (`revalidatePath`).
+
+## 🛠️ Tech Stack
+
+- **Framework**: Next.js 15 (App Router, Server Actions)
+- **Database ORM**: Prisma Client (PostgreSQL / Supabase)
+- **Authentication**: NextAuth.js v5 (Auth.js)
+- **Language**: TypeScript (Strict Mode)
+- **Validation**: Zod
+
+## 📁 Architecture & File Structure
+
+The project follows a scalable, feature-driven folder structure:
+
+```text
+├── components/                # Shared global UI elements (cards, forms, loaders)
+├── features/                  # Domain-driven feature modules
+│   ├── auth/                  # Authentication states, guards, and ownership helpers
+│   ├── organization/          # Multi-tenant state logic, mutations, and actions
+│   ├── membership/            # Team assignment operations and permissions queries
+│   └── tickets/               # Ticketing queries, forms, views, and contextual actions
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 💻 Core Technical Implementations
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 1. Secure Ownership & Permission Guards
+The core security layer implements a generic entity ownership check alongside organization membership verification to evaluate user actions dynamically:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```typescript
+// features/auth/utils/is-owner.ts
+type Entity = { userId?: string | null };
 
-## Learn More
+export const isOwner = async (
+  authUser: User | null | undefined, 
+  entity: Entity | null | undefined
+): Promise<boolean> => {
+  if (!authUser || !entity?.userId) return false;
+  return entity.userId === authUser.id;
+};
+```
 
-To learn more about Next.js, take a look at the following resources:
+### 2. Transactional Multi-Tenant Mutation Pipeline
+Organizations are spun up using safe database transactions that automatically assign the creator as an `ADMIN` while deactivating non-primary historical workspace scopes:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```typescript
+await prisma.\$transaction(async (tx) => {
+  const organization = await tx.organization.create({
+    data: {
+      ...data,
+      memberships: {
+        create: { userId: user.id, isActive: true, membershipRole: "ADMIN" }
+      }
+    }
+  });
+  
+  await tx.membership.updateMany({
+    where: { userId: user.id, organizationId: { not: organization.id } },
+    data: { isActive: false }
+  });
+});
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 3. Highly Optimized Data Transformations
+Data layer reads inject runtime metrics asynchronously before delivering content structures downstream to standard layout presentations:
 
-## Deploy on Vercel
+```typescript
+const list: TransformedTicket[] = await Promise.all(
+  tickets.map(async (ticket) => {      
+    const ticketIsOwner = await isOwner(user, ticket);
+    const organization = organizationsByUser.find(org => org.id === ticket.organizationId);
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+    return {
+      ...ticket,
+      isOwner: ticketIsOwner,
+      permissions: {
+        canDeleteTicket: ticketIsOwner && !!organization?.membershipByUser?.canDeleteTicket,
+      },
+    };
+  })
+);
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🛠️ Getting Started
+
+### Prerequisites
+- Node.js 18+ or 20+
+- A running PostgreSQL database (e.g., Supabase instance)
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com
+   cd ticket-app
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Configure your environment variables inside a `.env` file:
+   ```env
+   DATABASE_URL="postgresql://..."
+   AUTH_SECRET="your-next-auth-secret"
+   ```
+
+4. Push the database schema layout:
+   ```bash
+   npx prisma db push
+   ```
+
+5. Run the local development server environment:
+   ```bash
+   npm run dev
+   ```
+
+## 📄 License
+This project is open-source and available under the [MIT License](LICENSE).
