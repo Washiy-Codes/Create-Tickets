@@ -7,9 +7,10 @@ import { toast } from "sonner";
 import { updateTicketStatus } from "../actions/update-ticket-status";
 import { deleteTicket } from "../actions/delete-ticket";
 import { useConfirmDialog } from "@/components/confirm-dialog";
+import { SingleTransformedTicket } from "../queries/get-ticket";
 
 type TicketMoreMenuProps = {
-    ticket: Ticket;
+    ticket: SingleTransformedTicket;
     trigger: React.ReactNode;
 };
 
@@ -17,7 +18,7 @@ const TicketMoreMenu = ({ ticket, trigger }: TicketMoreMenuProps) => {
 
     const [deleteButton, deleteDialog] = useConfirmDialog({
         action: deleteTicket.bind(null, ticket.id),
-        trigger: <DropdownMenuItem>
+        trigger: <DropdownMenuItem disabled={!ticket.permission.canDeleteTicket} className="text-destructive">
             <LucideTrash2 className="mr-2 h-4 w-4" />
             <span>Delete</span>
         </DropdownMenuItem>
@@ -61,3 +62,14 @@ const TicketMoreMenu = ({ ticket, trigger }: TicketMoreMenuProps) => {
 }
 
 export {TicketMoreMenu}
+
+
+
+
+
+
+
+
+
+
+// disabled={!ticket.permission.canDeleteTicket}

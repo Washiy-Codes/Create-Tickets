@@ -17,24 +17,17 @@ import { TicketMoreMenu } from "./ticket-more-menu";
 import { getAuthOrRedirect } from "@/features/auth/actions/get-auth-or-redirect";
 import { isOwner } from "@/features/auth/utils/is-owner";
 import { Comments } from "@/features/comment/component/comment";
+import { SingleTransformedTicket } from "../queries/get-ticket";
 
 
 type  TicketItemProps ={
-    ticket: Prisma.TicketGetPayload<{
-        include: {
-            user: {
-                select: {
-                    username: true;
-                }
-            };
-        }
-    }>;
+    ticket: SingleTransformedTicket;
     isDetail?: boolean
 }
 
 
 const TicketItem = async({ ticket, isDetail }: TicketItemProps) => {
-    const user = await getAuthOrRedirect();
+    const {user} = await getAuthOrRedirect();
 
     const isTicketOwner = await isOwner(user, ticket);
     
