@@ -14,7 +14,7 @@ type TicketPageProps = {
 }
 
 const TicketsPage = async ({ searchParams }: TicketPageProps) => {
-  const user = await getAuthOrRedirect();
+  const {user} = await getAuthOrRedirect();
   
   const resolvedSearchParams = await searchParams;
   

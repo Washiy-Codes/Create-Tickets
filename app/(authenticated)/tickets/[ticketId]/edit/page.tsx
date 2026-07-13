@@ -30,7 +30,7 @@ const EditPage = async ({params} : EditPageProps) => {
         <div className="flex flex-col gap-y-4 flex-1 ">
         <Breadcrumbs breadcrumbs={[
             { title: 'Tickets', href: ticketsPath()},
-            { title: ticket.title, href: `tickets/${ticket.id}` },
+            { title : ticket.title || 'Unnamed Ticket', href: `tickets/${ticket.id}` },
             { title: 'Edit' },
         ]} />   
         <div className="flex flex-1 flex-col gap-8 items-center justify-center min-h-screen">
