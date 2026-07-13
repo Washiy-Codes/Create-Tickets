@@ -16,8 +16,21 @@ model Organization {
   updatedAt DateTime @updatedAt
   name      String
   tickets   Ticket[]
-
+  invitations Invitation[]
   memberships Membership[]
+}
+
+model Invitation {
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  tokenHash      String       @unique
+  email          String       
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId String
+  invitedByUser  User         @relation(fields: [invitedByUserId], references: [id], onDelete: SetNull)
+  invitedByUserId String
+
+  @@index([organizationId])
 }
 
 model Membership {
@@ -29,6 +42,7 @@ model Membership {
   joinedAt DateTime @default(now())
   isActive  Boolean
   membershipRole   MembershipRole @default(MEMBER)
+  canDeleteTicket  Boolean @default(true)
 
   @@id([organizationId, userId])
   @@index([organizationId])
@@ -54,6 +68,7 @@ model User {
   accounts      Account[] // Crucial: Connects users to their OAuth profiles
   tickets       Ticket[]   
   comments      Comment[]
+  invitesByUser  Invitation[]
 }
 
 model EmailVerificationToken {
