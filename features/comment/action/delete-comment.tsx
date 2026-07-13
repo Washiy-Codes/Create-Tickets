@@ -7,7 +7,7 @@ import { ticketPath } from "@/paths";
 import { revalidatePath } from "next/cache";
 
 const deleteComment = async (id: string) => {
-    const user = await getAuthOrRedirect();
+    const {user} = await getAuthOrRedirect();
    const comment = await prisma.comment.findUnique({
         where: {
             id: id

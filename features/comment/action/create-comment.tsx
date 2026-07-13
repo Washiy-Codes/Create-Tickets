@@ -17,7 +17,7 @@ const createComment = async (ticketId: string,
     formData: FormData) => {
 
 
-    const user = await getAuthOrRedirect();
+const {user} = await getAuthOrRedirect();
     try{
         const data = commentSchema.parse(Object.fromEntries(formData))
         await prisma.comment.create({
