@@ -17,6 +17,7 @@ const accountPasswordPath = ()=> "/account/password";
 const membershipsPath = (organizationId: string) => `/organization/${organizationId}/memberships`;
 const ticketsByOrganizationPath = () => "/tickets/organization";
 const invitationsPath = (organizationId: string) => `/organization/${organizationId}/invitations`;
+const emailInvitationPath = () => "/invitation/email-invitation";
 export { 
     ticketsPath, 
     ticketPath, 
@@ -34,5 +35,6 @@ export {
     selectActiveOrganizationPath,
     membershipsPath,
     ticketsByOrganizationPath,
-    invitationsPath
+    invitationsPath,
+    emailInvitationPath
 };
