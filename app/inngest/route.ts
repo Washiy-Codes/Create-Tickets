@@ -7,7 +7,6 @@ export const {PUT, POST, GET} = serve({
     client: inngest,
     functions: [
         passwordResetEvent,
-        passwordResetEvent,
         // invitationCreatedEvent
 
     ]
