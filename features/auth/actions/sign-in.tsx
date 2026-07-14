@@ -68,6 +68,168 @@ export { signInAction };
 
 
 
+
+
+
+
+
+// "use server";
+
+// import { ActionState, fromErrorToActionState, toActionState } from "@/components/form/utils/to-action-state";
+// import z from "zod";
+// import prisma from "@/lib/prisma";
+// import bcrypt from "bcryptjs";
+// import { signIn } from "@/auth"; 
+// import { redirect } from "next/navigation";
+// import { revalidatePath } from "next/cache";
+// import { homePath } from "@/paths";
+
+// const signInSchema = z.object({
+//   email: z.string().email(),
+//   password: z.string().min(6).max(100).trim(),
+// });
+
+// const signInAction = async (_actionState: ActionState, formData: FormData) => {
+//   try {
+//     const { email, password } = signInSchema.parse(Object.fromEntries(formData));
+
+//     const user = await prisma.user.findUnique({ where: { email } });
+//     if (!user || !user.passwordHash) {
+//       return toActionState("ERROR", "Invalid email or password", formData);
+//     }
+
+//     const passwordMatch = await bcrypt.compare(password, user.passwordHash);
+//     if (!passwordMatch) {
+//       return toActionState("ERROR", "Invalid email or password", formData);
+//     }
+    
+//     const result = await signIn("credentials", {
+//       email,
+//       password,
+//       redirect: false,
+//     });
+
+//     if (result?.error) {
+//       return toActionState("ERROR", "Login failed", formData);
+//     }
+    
+//     // CRITICAL FIXES FOR PRODUCTION CACHING:
+//     revalidatePath("/", "layout"); // Clears the layout cache completely
+    
+//   } catch (error) {
+//     return fromErrorToActionState(error, formData);
+//   }
+
+//   // Next.js redirects must be called OUTSIDE try/catch blocks
+//   redirect(homePath()); 
+// };
+
+// export { signInAction };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // "use server";
 
 // import { ActionState, fromErrorToActionState, toActionState } from "@/components/form/utils/to-action-state";
