@@ -15,7 +15,7 @@ A production-grade, full-stack ticketing application built with the **Next.js Ap
 - **Framework**: Next.js 15 (App Router, Server Actions)
 - **Database ORM**: Prisma Client (PostgreSQL / Supabase)
 - **Authentication**: NextAuth.js v5 (Auth.js)
-- **Language**: TypeScript (Strict Mode)
+- **Language**: TypeScript 
 - **Validation**: Zod
 
 ##  Architecture & File Structure
